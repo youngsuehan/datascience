@@ -1,1 +1,353 @@
+@@ -0,0 +1,353 @@
+#######################################################
+# II. 단순회귀분석 
+#######################################################
+auto_data <- read.csv("autos.csv", header = TRUE)
+lm.autos1 <- lm(price ~ horsepower, data = auto_data)
+summary(lm.autos1)
+
+plot (price ~ horsepower, data = auto_data)
+abline (lm.autos1)
+#######################################################
+stature <- c(162, 163, 165, 170, 171, 174, 175, 178, 178, 225)
+weight <- c(65, 60, 75, 67, 72, 70, 80, 76, 85, 140)
+lm.model1 <- lm(weight ~ stature)
+summary(lm.model1)
+
+plot(weight ~ stature)
+abline(lm.model1)
+
+abline(h = mean(weight), col = "red")
+#######################################################
+y_i <- weight 
+print(y_i) # y관측치
+y_hat <- stature*1.211787-135.46743 
+print(y_hat) # 추정치
+y_bar <- mean(y_i) # 평균
+print(y_bar)
+residual <- y_i - y_hat # 잔차
+print(residual)
+y_hat - y_bar
+y_i - y_bar # Y_i-Y ̅
+print(y_i - y_bar)
+SSR <- sum((y_hat - y_bar)^2) 
+SST <- sum((y_i - y_bar)^2)
+#######################################################
+shapiro.test(lm.autos1$residuals) 
+
+#######################################################
+#III.	다중회귀분석 
+#######################################################
+library(scatterplot3d)
+auto_data <- read.csv("autos.csv", header = TRUE)
+x <- auto_data$engine.size
+y <- auto_data$horsepower
+z <- auto_data$price
+scatterplot3d(x, y, z, pch = 5,  grid = TRUE, color = "lightblue", main = "Multiple Regression with Two Independent Variables", xlab = "engine.size", ylab = "horsepower", zlab = "price")
+#######################################################
+lm.autos2 <- lm(price ~ engine.size + horsepower, data = auto_data)
+summary(lm.autos2)
+#######################################################
+library(plot3D)
+x <- auto_data$engine.size
+y <- auto_data$horsepower
+z <- auto_data$price
+fit <- lm(z ~ x + y)
+grid.lines = 26
+x.pred <- seq(min(x), max(x), length.out = grid.lines)
+y.pred <- seq(min(y), max(y), length.out = grid.lines)
+xy <- expand.grid( x = x.pred, y = y.pred)
+z.pred <- matrix(predict(fit, newdata = xy), 
+                 nrow = grid.lines, ncol = grid.lines)
+# fitted points for droplines to surface
+fitpoints <- predict(fit)
+# scatter plot with regression plane
+scatter3D(x, y, z, pch = 18, cex = 2, 
+          theta = 20, phi = 20, ticktype = "detailed",
+          xlab = "Engine Size", ylab = "Horsepower", zlab = "Price",  
+          surf = list(x = x.pred, y = y.pred, z = z.pred,  
+                      facets = NA, fit = fitpoints), main = "Autos")
+#######################################################
+library(car)  
+data(mtcars)
+head(mtcars)
+lm.model <- lm(mpg ~ disp + wt, data = mtcars)
+library(car)
+durbinWatsonTest(lm.model)
+#######################################################
+library(MASS)
+library(car)
+data(Boston)
+model1 <- lm(medv ~., data = Boston)
+vif(model1)
+#######################################################
+library(car)
+lm.fit <- lm(mpg ~ cyl + hp + wt, data = mtcars)
+step(lm.fit, direction = "backward")
+#######################################################
+auto_data <- read.csv("autos.csv", header = TRUE)
+lm.autos <- lm(price ~ engine.size + horsepower, data = auto_data)
+library(car)
+crPlots(lm.autos)
+#######################################################
+library(car)
+auto_data <- read.csv("autos.csv", header = TRUE)
+lm.autos <- lm(price ~ engine.size + horsepower, data = auto_data)
+ncvTest(lm.autos)
+spreadLevelPlot(lm.autos)
+#######################################################
+#내장 데이터 women 사용
+# 모형1선형모형
+lm.women1 <- lm(weight ~ height, data = women)
+summary(lm.women1)
+plot(weight ~ height, data = women)
+abline(lm.women1)
+# 모형2다항모형
+lm.women2 <- lm(weight ~ height + I(height^2), data = women)
+summary(lm.women2)
+plot(weight ~ height, data = women)
+lines(women$height, fitted(lm.women2))
+#AIC() 함수: AIC(비교하고 싶은 함수 1, 비교하고 싶은 함수2, …)
+AIC(lm.women1, lm.women2)
+#######################################################
+lm.autos3 <- lm(city.mpg ~ log(horsepower), data = auto_data)
+summary (lm.autos3)
+#######################################################
+lm.autos4 <- loess(city.mpg ~ horsepower, data = auto_data)
+summary (lm.autos4)
+#######################################################
+library(np)
+model.np <- npreg(city.mpg ~ horsepower, kernel = "normal", data = auto_data)
+summary(model.np)
+#######################################################
+#V.	로지스틱  회귀모형 
+#######################################################
+e <-  exp(1)
+curve(1/(1 + e^-x), -10, 10)
+#######################################################
+
+sleep <- read.csv("sleep.csv", header = TRUE)
+View(sleep)
+sleep.tab <- table(sleep$Outcome, sleep$Age)
+sleep.tab
+#######################################################
+prop.tab <- prop.table(sleep.tab, 2)
+prop.yes <- prop.tab[2, ]
+age <- 14:18
+plot(prop.yes ~ age, xlab= "Age", ylab = "Proportion Saying Yes")
+lm.sleep <- lm(prop.yes ~ age)
+abline(lm.sleep)
+#######################################################
+odds <- (prop.yes)/(1-prop.yes)
+logit = log(odds)
+#######################################################
+logistic.model <- glm(Outcome ~ Age, family = "binomial", data = sleep)
+summary(logistic.model)
+#######################################################
+education.time_pass <-  read.csv("education.time_pass.csv", header = TRUE)
+plot(pass ~ education.time, data = education.time_pass)
+#######################################################
+lm.model <-  lm(pass ~ education.time, data = education.time_pass)
+abline(lm.model)
+#######################################################
+glm.fit1 <-  glm(pass ~ education.time, family = "binomial", data = education.time_pass)
+summary(glm.fit1)
+#######################################################
+exp(0.16149)
+#######################################################
+phat <-  exp(-3.0597+0.16149*education.time_pass$education.time) / (1 + exp(-3.0597+0.16149*education.time_pass$education.time))
+plot(education.time_pass$education.time, phat, xlab="education.time")
+#######################################################
+Breast_Cancer <- read.csv ("breast_cancer.csv", header = TRUE)
+head(Breast_Cancer)
+plot (Class ~ Cl.thickness, data = Breast_Cancer)
+glm.fit2<- glm(Class ~ Cl.thickness, family="binomial", data = Breast_Cancer)
+summary(glm.fit2)
+#######################################################
+glm.fit3 <- glm(am ~ cyl + hp + wt, family = "binomial", data = mtcars)
+summary(glm.fit3)
+#######################################################
+admission <- read.csv("admission.csv", header = TRUE)
+View(admission)
+admission$rank <- factor(admission$rank)
+glm.fit4 <- glm(admit ~ gre + gpa + rank, family = "binomial", data = admission)
+summary(glm.fit4)
+#######################################################
+#VI.	분류
+#######################################################
+education.time_pass <- read.csv("education.time_pass.csv", header = TRUE)
+logistic.model <-  glm(pass ~ education.time, family = "binomial", data = education.time_pass)
+library(ROCR)
+df <-  education.time_pass
+pred <-  prediction(education.time_pass$education.time, education.time_pass$pass)
+perf <-  performance(pred,"tpr","fpr")
+plot(perf, colorize = TRUE)
+#######################################################
+#VII.	분류알고리즘
+#######################################################
+library(party)
+iris_ctree <- ctree(Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width, data = iris)
+print(iris_ctree)
+plot(iris_ctree)
+#######################################################
+library(rpart)
+fit <- rpart(Mileage ~ Price + Country + Reliability + Type, method = "anova", data = cu.summary)
+printcp(fit) 
+plotcp(fit) 
+summary(fit) 
+par(mfrow = c(1,2)) 
+rsq.rpart(fit) 
+plot(fit, uniform = TRUE, main = "Regression Tree for Mileage ")
+text(fit, use.n = TRUE, all = TRUE, cex = .8)
+#######################################################
+library(adabag)
+data(iris) 
+iris.bagging <- bagging(Species~., data = iris, mfinal = 10) 
+# mfinal = 반복수 또는 트리의 수 (디폴트=100) 
+iris.bagging$importance # 변수의 상대적인 중요도 
+plot(iris.bagging$trees[[10]]) 
+text(iris.bagging$trees[[10]]) 
+#######################################################
+library(adabag)
+data(iris) 
+boo.adabag <- boosting(Species~., data = iris, boos = TRUE, mfinal = 10) 
+boo.adabag$importance 
+plot(boo.adabag$trees[[10]])
+text(boo.adabag$trees[[10]]) 
+#######################################################
+library(party)
+print(head(readingSkills))
+library(randomForest)
+output.forest <- randomForest(nativeSpeaker ~ age + shoeSize + score, data = readingSkills)
+print(output.forest)
+#######################################################
+ind <- sample(2, nrow(iris), replace = TRUE, prob = c(0.7, 0.3))
+trainData <- iris[ind==1,]
+testData <- iris[ind==2,]
+library(randomForest)
+rf2 <- randomForest(Species ~ ., data = trainData, ntree = 100, proximity = TRUE)
+table(predict(rf2), trainData$Species)
+print(rf2)
+plot(rf2)
+importance(rf2)
+varImpPlot(rf2)
+#######################################################
+library(e1071)
+data(iris)
+svm.e1071 <- svm(Species ~ . , data = iris, type = "C-classification", kernel = "radial", cost = 10, gamma = 0.1) 
+summary(svm.e1071) 
+plot(svm.e1071, iris, Petal.Width ~ Petal.Length, slice = list(Sepal.Width = 3, Sepal.Length = 4)) 
+#######################################################
+library(kernlab)
+data(iris)
+# svm.e1071 <- svm(Species ~ . , data = iris, type = "C-classification", kernel = "radial", cost = 10, gamma = 0.1) 
+svm.res <- ksvm(Species ~ . , data = iris, type = "C-svc")
+summary(svm.res) 
+plot(svm.res, iris, Petal.Width ~ Petal.Length, slice = list(Sepal.Width = 3, Sepal.Length = 4)) 
+#######################################################
+eng <- c(60, 100, 80, 60, 70)
+math <- c(20, 80, 50, 80, 100)
+pca.data <- data.frame(eng, math)
+pca.data
+pca.res <- prcomp(pca.data)
+pca.res
+summary(pca.res)
+#######################################################
+data(iris)
+head(iris, 3)
+log.ir <- log(iris[, 1:4])
+ir.species <- iris[, 5]
+ir.pca <- prcomp(log.ir, center = TRUE, scale. = TRUE) 
+print(ir.pca)
+plot(ir.pca, type = "l")
+summary(ir.pca)
+biplot(ir.pca)
+predict(ir.pca, newdata = tail(log.ir, 2))
+#######################################################
+data(iris)
+head(iris)
+library(e1071)
+m <- naiveBayes(Species ~ ., data = iris)
+m
+table(predict(m, iris), iris[,5])
+#######################################################
+library(e1071)
+library(mlbench)
+data(HouseVotes84)
+head(HouseVotes84)
+model <-naiveBayes(Class ~., data = HouseVotes84)
+pred <- predict(model, HouseVotes84[,-1])
+tab <- table(pred, HouseVotes84$Class)
+tab
+#######################################################
+#VIII.	군집분석
+#######################################################
+newiris <- iris
+newiris$Species <- NULL
+kc <- kmeans(newiris, 3)
+plot(newiris[c("Sepal.Length", "Sepal.Width")], col = kc$cluster)
+#######################################################
+idx <- sample(1:dim(iris)[1], 40)
+irisSample <- iris[idx,]
+irisSample$Species <- NULL
+hc <- hclust(dist(irisSample), method = "ave")
+plot(hc, hang = -1, labels = iris$Species[idx])
+#######################################################
+data(USArrests)
+str(USArrests)
+d<- dist(USArrests, method = "euclidean")
+fit<- hclust(d, method = "ave")
+par(mfrow = c(1,2))
+plot(fit)
+plot(fit, hang = -1)
+par(mfrow = c(1,1))
+groups <- cutree(fit, k=6)
+groups
+plot(fit)
+rect.hclust(fit, k=6, border="red")
+hca <- hclust(dist(USArrests))
+plot(hca)
+rect.hclust(hca, k=3, border="red")
+rect.hclust(hca, h=50, which =c(2,7), border=3:4)
+#######################################################
+library(fpc)
+iris2 <- iris[-5] # remove class tags 
+ds <- dbscan(iris2, eps=0.42, MinPts=5) #compare clusters with original class labels  
+table(ds$cluster, iris$Species) 
+plot(ds, iris2)
+#######################################################
+#IX.	연관규칙
+#######################################################
+Titanic1 <- read.csv("titanic.csv", header = TRUE)
+library(arules) 
+rules <- apriori(Titanic1)
+inspect(rules)
+library(arulesViz)
+plot(rules)
+plot(rules, method="graph", control=list(type="items")) 
+plot(rules, method="paracoord", control=list(reorder=TRUE))
+#######################################################
+#X.	머신러닝
+#######################################################
+set.seed(100)
+library(MASS)
+library(neuralnet)
+bdat <- Boston
+str(bdat)
+i <- sample(1:nrow(bdat), round(0.5*nrow(bdat)))
+max1 = apply(bdat, 2, max)
+min1 = apply(bdat, 2, min)
+sdat = scale(bdat, center = min1, scale = max1 - min1) 
+sdat = as.data.frame(sdat)
+train = sdat[i,] #학습, 훈련샘플 training
+test = sdat[-i,] #테스트샘플 test
+n <- names(train) 
+form <- as.formula(paste('medv~',paste(n[!n %in% 'medv'],collapse = '+'))) 
+nn1 <- neuralnet(form, data=train, hidden = c(5,3),linear.output = T)
+summary(nn1)
+plot(nn1)
+
+
+
+
 
